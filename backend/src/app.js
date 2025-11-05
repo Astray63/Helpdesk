@@ -3,6 +3,7 @@ const cors = require('cors');
 const authRoutes = require('./routes/authRoutes');
 const ticketRoutes = require('./routes/ticketRoutes');
 
+console.log('[APP] Initialisation de l\'application Express...');
 const app = express();
 
 // config CORS

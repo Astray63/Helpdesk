@@ -1,4 +1,11 @@
 require('dotenv').config();
+
+// Log immédiat pour vérifier que le serveur démarre
+console.log('='.repeat(80));
+console.log('🚀 HELPDESK BACKEND - DÉMARRAGE');
+console.log('='.repeat(80));
+console.log('Timestamp:', new Date().toISOString());
+
 const app = require('./app');
 const { testConnection } = require('./config/database');
 const { syncDatabase } = require('./models');
@@ -21,10 +28,20 @@ const startServer = async () => {
     await syncDatabase(forceSync);
     
     app.listen(PORT, '0.0.0.0', () => {
-      console.log('\n✅ Serveur démarré avec succès');
+      console.log('\n' + '='.repeat(80));
+      console.log('✅ SERVEUR DÉMARRÉ AVEC SUCCÈS');
+      console.log('='.repeat(80));
       console.log(`📡 URL: http://0.0.0.0:${PORT}`);
       console.log(`🌍 Environnement: ${process.env.NODE_ENV || 'development'}`);
-      console.log(`\n📚 Documentation API disponible sur http://0.0.0.0:${PORT}\n`);
+      console.log(`� Frontend autorisé: ${process.env.FRONTEND_URL || 'localhost'}`);
+      console.log(`💾 Base de données: ${process.env.DATABASE_URL ? 'PostgreSQL (Render)' : 'SQLite (local)'}`);
+      console.log(`📚 Documentation API: http://0.0.0.0:${PORT}`);
+      console.log('='.repeat(80) + '\n');
+      
+      // Force le flush des logs
+      if (process.stdout.isTTY === false) {
+        process.stdout.write('');
+      }
     });
   } catch (error) {
     console.error('❌ Erreur lors du démarrage du serveur:', error);
