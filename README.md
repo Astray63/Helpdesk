@@ -384,20 +384,4 @@ Authorization: Bearer <token>
 - ✅ Utilisation d'un ORM pour éviter les injections SQL
 - ✅ CORS configuré correctement
 
-## 🤝 Contributeurs
-
-- **Votre Nom** - Développeur Full Stack - [GitHub](https://github.com/votreprofil)
-
-## 📄 Licence
-
-Ce projet est sous licence MIT. Voir le fichier `LICENSE` pour plus de détails.
-
-## 📞 Support
-
-Pour toute question ou problème :
-- Ouvrir une issue sur GitHub
-- Contacter : votre@email.com
-
----
-
 **Projet réalisé dans le cadre du Titre RNCP Concepteur Développeur d'Applications**
