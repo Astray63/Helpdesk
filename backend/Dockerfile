@@ -31,11 +31,13 @@ RUN apt-get update && \
 RUN groupadd -r nodejs --gid=1001 && \
     useradd -r -g nodejs --uid=1001 nodejs
 
-# Création du répertoire pour la base de données avec les bonnes permissions
-RUN mkdir -p /app/data && chown -R nodejs:nodejs /app/data
-
 # Copie des fichiers depuis le builder
 COPY --from=builder --chown=nodejs:nodejs /app /app
+
+# Création du répertoire pour la base de données avec les bonnes permissions
+# IMPORTANT: Sur Render, utiliser /tmp pour les fichiers SQLite car /app est read-only
+RUN mkdir -p /app/data && chown -R nodejs:nodejs /app/data && \
+    mkdir -p /tmp/data && chown -R nodejs:nodejs /tmp/data
 
 # Utilisation de l'utilisateur non-root
 USER nodejs
