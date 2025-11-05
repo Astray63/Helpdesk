@@ -15,7 +15,7 @@ const sequelize = process.env.DATABASE_URL
           rejectUnauthorized: false
         } : false
       },
-      logging: false,
+      logging: console.log, // Active les logs SQL
       define: {
         timestamps: true,
         underscored: false,
@@ -30,6 +30,8 @@ const sequelize = process.env.DATABASE_URL
         underscored: false,
       },
     });
+
+console.log('[INFO] Base de données:', process.env.DATABASE_URL ? 'PostgreSQL' : 'SQLite');
 
 /**
  * Test de la connexion à la base de données
