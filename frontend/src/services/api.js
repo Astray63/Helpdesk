@@ -2,14 +2,13 @@ import axios from 'axios';
 
 /**
  * Configuration de l'URL de l'API
- * En production (Docker), utilise le proxy nginx (/api)
- * En développement local, utilise directement le port 5000
+ * Priorité : VITE_API_URL > proxy nginx > localhost
  */
-const API_URL = import.meta.env.VITE_API_URL || (
-  import.meta.env.MODE === 'production' 
-    ? '/api'  // Via proxy nginx en production
+const API_URL = import.meta.env.VITE_API_URL || 
+  (import.meta.env.MODE === 'production' 
+    ? '/api'  // Via proxy nginx en production Docker
     : 'http://localhost:5000'  // Direct en développement
-);
+  );
 
 /**
  * Instance Axios configurée
