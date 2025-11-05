@@ -63,7 +63,8 @@ Les administrateurs peuvent :
 - **Node.js** (v18+) - Environnement d'exécution JavaScript
 - **Express** - Framework web minimaliste
 - **Sequelize** - ORM pour la gestion de base de données
-- **SQLite** - Base de données légère
+- **PostgreSQL** - Base de données relationnelle (production)
+- **SQLite** - Base de données légère (développement)
 - **JWT** (jsonwebtoken) - Authentification par tokens
 - **bcrypt** - Hashage des mots de passe
 - **express-validator** - Validation des entrées
@@ -81,10 +82,11 @@ Les administrateurs peuvent :
 - **React Testing Library** - Tests de composants React
 - **Vitest** - Runner de tests pour Vite
 
-### DevOps
+### DevOps & Cloud
 - **Docker** - Conteneurisation
 - **Docker Compose** - Orchestration multi-conteneurs
-- **GitHub Actions** - CI/CD automatisé
+- **Render** - Plateforme de déploiement cloud
+- **PostgreSQL (Render)** - Base de données managée
 - **Nginx** - Serveur web pour le frontend
 
 ## 📦 Prérequis
@@ -125,18 +127,38 @@ cp .env.example .env
 
 ### Backend (.env)
 
+#### Développement (SQLite)
 ```env
 PORT=5000
 NODE_ENV=development
 JWT_SECRET=votre_secret_jwt_ultra_securise_changez_moi
 JWT_EXPIRES_IN=24h
 DATABASE_PATH=./database.sqlite
+FORCE_SYNC=false
+FRONTEND_URL=http://localhost:3000
+```
+
+#### Production (PostgreSQL)
+```env
+NODE_ENV=production
+PORT=5000
+DATABASE_URL=postgresql://user:password@host:5432/database
+JWT_SECRET=<générer avec: node -e "console.log(require('crypto').randomBytes(32).toString('hex'))">
+JWT_EXPIRES_IN=24h
+FORCE_SYNC=true
+FRONTEND_URL=https://votre-frontend.onrender.com
 ```
 
 ### Frontend (.env)
 
+#### Développement
 ```env
 VITE_API_URL=http://localhost:5000
+```
+
+#### Production
+```env
+VITE_API_URL=https://votre-backend.onrender.com
 ```
 
 ## 🎬 Lancement de l'application
@@ -215,9 +237,38 @@ Après le premier lancement (avec `FORCE_SYNC=true`), un compte administrateur e
 
 ## 🚢 Déploiement
 
-Consultez le fichier [DEPLOYMENT.md](./DEPLOYMENT.md) pour les instructions détaillées de déploiement.
+### Déploiement sur Render (Recommandé)
 
-### Déploiement rapide avec Docker
+#### 1. Backend
+1. Créer un **PostgreSQL Database** sur Render
+2. Créer un **Web Service** Docker :
+   - Repository : `https://github.com/Astray63/Helpdesk`
+   - Docker Context Directory : `./backend`
+   - Dockerfile Path : `./Dockerfile`
+   - Variables d'environnement :
+     ```
+     NODE_ENV=production
+     PORT=5000
+     DATABASE_URL=<Internal Database URL de PostgreSQL>
+     JWT_SECRET=<générer un token sécurisé>
+     JWT_EXPIRES_IN=24h
+     FORCE_SYNC=true
+     FRONTEND_URL=https://votre-frontend.onrender.com
+     ```
+
+#### 2. Frontend
+1. Créer un **Web Service** Docker :
+   - Repository : `https://github.com/Astray63/Helpdesk`
+   - Docker Context Directory : `./frontend`
+   - Dockerfile Path : `./Dockerfile`
+   - Variables d'environnement :
+     ```
+     VITE_API_URL=https://votre-backend.onrender.com
+     ```
+
+Consultez le fichier [DEPLOYMENT.md](./DEPLOYMENT.md) pour les instructions détaillées.
+
+### Déploiement local avec Docker
 
 ```bash
 # Build des images
@@ -372,16 +423,48 @@ Supprime un ticket.
 Authorization: Bearer <token>
 ```
 
-## 🔒 Sécurité
+## � Migration de base de données
+
+L'application supporte automatiquement SQLite (dev) et PostgreSQL (prod).
+
+### Développement → Production
+
+Lors du déploiement sur Render :
+1. Créez une base PostgreSQL
+2. Configurez `DATABASE_URL` dans les variables d'environnement
+3. Le backend détecte automatiquement PostgreSQL
+4. Utilisez `FORCE_SYNC=true` pour la première synchronisation
+5. Passez à `FORCE_SYNC=false` après la première exécution
+
+⚠️ **Note** : `FORCE_SYNC=true` réinitialise la base de données !
+
+## �🔒 Sécurité
 
 - ✅ Mots de passe hashés avec bcrypt (10 rounds)
 - ✅ Authentification JWT avec expiration
 - ✅ Validation des entrées côté serveur
 - ✅ Protection CSRF via tokens
-- ✅ Headers de sécurité HTTP
+- ✅ Headers de sécurité HTTP (X-Frame-Options, CSP, etc.)
 - ✅ Gestion des erreurs sécurisée
 - ✅ Variables d'environnement pour les secrets
 - ✅ Utilisation d'un ORM pour éviter les injections SQL
 - ✅ CORS configuré correctement
+- ✅ SSL/TLS en production via PostgreSQL
+- ✅ Conteneurs Docker non-root
+
+## 🌐 URLs de production
+
+- **Frontend** : https://helpdesk-frontend.onrender.com *(à configurer)*
+- **Backend API** : https://helpdesk-backend.onrender.com *(à configurer)*
+- **Base de données** : PostgreSQL managée par Render
+
+## 📝 Changelog
+
+### v1.0.0 (Novembre 2025)
+- ✨ Support PostgreSQL pour la production
+- ✨ Déploiement sur Render
+- ✅ Suppression du proxy nginx pour services séparés
+- ✅ Configuration multi-environnement (dev/prod)
+- ✅ Base de code complète avec tests
 
 **Projet réalisé dans le cadre du Titre RNCP Concepteur Développeur d'Applications**
