@@ -44,8 +44,10 @@ const User = sequelize.define('User', {
  */
 User.beforeCreate(async (user) => {
   if (user.password) {
+    console.log('[USER MODEL] Hashage du mot de passe pour:', user.email);
     const salt = await bcrypt.genSalt(10);
     user.password = await bcrypt.hash(user.password, salt);
+    console.log('[USER MODEL] ✅ Mot de passe hashé');
   }
 });
 
@@ -54,8 +56,10 @@ User.beforeCreate(async (user) => {
  */
 User.beforeUpdate(async (user) => {
   if (user.changed('password')) {
+    console.log('[USER MODEL] Hashage du nouveau mot de passe pour:', user.email);
     const salt = await bcrypt.genSalt(10);
     user.password = await bcrypt.hash(user.password, salt);
+    console.log('[USER MODEL] ✅ Mot de passe mis à jour et hashé');
   }
 });
 
@@ -65,7 +69,10 @@ User.beforeUpdate(async (user) => {
  * @returns {Promise<boolean>} - True si le mot de passe correspond
  */
 User.prototype.comparePassword = async function(password) {
-  return await bcrypt.compare(password, this.password);
+  console.log('[USER MODEL] Comparaison du mot de passe pour:', this.email);
+  const isValid = await bcrypt.compare(password, this.password);
+  console.log('[USER MODEL] Résultat de la comparaison:', isValid ? '✅ Valide' : '❌ Invalide');
+  return isValid;
 };
 
 /**
