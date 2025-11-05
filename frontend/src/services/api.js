@@ -2,13 +2,18 @@ import axios from 'axios';
 
 /**
  * Configuration de l'URL de l'API
- * Priorité : VITE_API_URL > proxy nginx > localhost
+ * IMPORTANT: En production sur Render, VITE_API_URL DOIT être défini !
+ * Exemple: https://helpdesk-backend.onrender.com
  */
-const API_URL = import.meta.env.VITE_API_URL || 
-  (import.meta.env.MODE === 'production' 
-    ? '/api'  // Via proxy nginx en production Docker
-    : 'http://localhost:5000'  // Direct en développement
-  );
+const API_URL = import.meta.env.VITE_API_URL || 'http://localhost:5000';
+
+// Avertissement si VITE_API_URL n'est pas défini en production
+if (import.meta.env.MODE === 'production' && !import.meta.env.VITE_API_URL) {
+  console.error('⚠️ ATTENTION: VITE_API_URL non défini en production!');
+  console.error('L\'application utilisera localhost:5000 ce qui ne fonctionnera pas.');
+}
+
+console.log('🔗 API URL configurée:', API_URL);
 
 /**
  * Instance Axios configurée
