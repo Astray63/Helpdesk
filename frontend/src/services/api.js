@@ -4,13 +4,47 @@ import axios from 'axios';
  * Configuration de l'URL de l'API
  * IMPORTANT: En production sur Render, VITE_API_URL DOIT être défini !
  * Exemple: https://helpdesk-backend.onrender.com
+ * 
+ * Priorité de configuration :
+ * 1. window.ENV.VITE_API_URL (configuration runtime via config.js)
+ * 2. import.meta.env.VITE_API_URL (variable d'environnement au build)
+ * 3. Détection automatique si le backend est sur le même domaine
+ * 4. localhost:5000 (développement)
  */
-const API_URL = import.meta.env.VITE_API_URL || 'http://localhost:5000';
+const getApiUrl = () => {
+  // 1. Configuration runtime (via config.js ou window.ENV)
+  if (window.ENV?.VITE_API_URL) {
+    return window.ENV.VITE_API_URL;
+  }
+  
+  // 2. Variable d'environnement de build
+  if (import.meta.env.VITE_API_URL) {
+    return import.meta.env.VITE_API_URL;
+  }
+  
+  // 3. En production, essayer de détecter l'URL du backend
+  if (import.meta.env.MODE === 'production') {
+    // Si le frontend est hébergé sur Render, le backend suit souvent ce pattern
+    const hostname = window.location.hostname;
+    if (hostname.includes('onrender.com')) {
+      // Essayer de deviner l'URL du backend basée sur le pattern Render
+      const backendUrl = hostname.replace('frontend', 'backend');
+      console.warn('⚠️ VITE_API_URL non défini, tentative de détection automatique:', `https://${backendUrl}`);
+      return `https://${backendUrl}`;
+    }
+  }
+  
+  // 4. Développement local
+  return 'http://localhost:5000';
+};
+
+const API_URL = getApiUrl();
 
 // Avertissement si VITE_API_URL n'est pas défini en production
-if (import.meta.env.MODE === 'production' && !import.meta.env.VITE_API_URL) {
+if (import.meta.env.MODE === 'production' && !import.meta.env.VITE_API_URL && !window.ENV?.VITE_API_URL) {
   console.error('⚠️ ATTENTION: VITE_API_URL non défini en production!');
-  console.error('L\'application utilisera localhost:5000 ce qui ne fonctionnera pas.');
+  console.error('L\'application utilisera une URL détectée automatiquement, ce qui peut ne pas fonctionner.');
+  console.error('Définissez VITE_API_URL dans les variables d\'environnement de Render avant le build.');
 }
 
 console.log('🔗 API URL configurée:', API_URL);

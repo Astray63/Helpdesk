@@ -345,13 +345,41 @@ sudo certbot renew --dry-run
    Publish Directory: frontend/dist
    ```
 
-3. **Variables d'environnement**
+3. **⚠️ IMPORTANT : Variables d'environnement**
+   
+   **VOUS DEVEZ DÉFINIR CES VARIABLES AVANT LE BUILD !**
+   
+   Dans l'onglet "Environment" de votre Static Site Render :
    ```
-   VITE_API_URL=<URL du backend Render>
+   VITE_API_URL=https://votre-backend.onrender.com
    ```
+   
+   ⚠️ **Note critique** : Les variables `VITE_*` doivent être définies AVANT le build car elles sont compilées dans le code JavaScript. Si vous les ajoutez après le premier build, vous DEVEZ redéployer !
+   
+   **Comment obtenir l'URL du backend :**
+   1. Déployez d'abord le backend
+   2. Copiez l'URL du backend (ex: `https://helpdesk-backend-xxxx.onrender.com`)
+   3. Ajoutez `VITE_API_URL` dans les variables d'environnement du frontend
+   4. Déployez le frontend
 
 4. **Déploiement**
    - Cliquer sur "Create Static Site"
+   
+5. **Vérification**
+   - Ouvrir la console du navigateur (F12)
+   - Vous devriez voir : `🔗 API URL configurée: https://votre-backend.onrender.com`
+   - Si vous voyez `localhost:5000`, la variable n'était pas définie au moment du build
+
+6. **En cas de problème**
+   
+   Si l'URL n'est pas correcte :
+   - Vérifiez que `VITE_API_URL` est bien défini dans Render
+   - Cliquez sur "Manual Deploy" → "Clear build cache & deploy"
+   - Attendez que le nouveau build se termine
+   
+   **Alternative (configuration post-build)** :
+   - Après le déploiement, vous pouvez modifier le fichier `/config.js` dans votre build
+   - Cette méthode est moins recommandée mais peut dépanner
 
 ---
 
