@@ -9,5 +9,5 @@
  */
 window.ENV = {
   // URL de l'API backend
-  VITE_API_URL: 'https://helpdesk-backend-y73t.onrender.com'
+  VITE_API_URL: 'https://helpdesk-backend-2741.onrender.com'
 };
