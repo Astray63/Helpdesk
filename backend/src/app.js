@@ -10,6 +10,7 @@ const app = express();
 const allowedOrigins = [
   'http://localhost:3000',
   'http://localhost',
+  'https://helpdesk-frontend-y73t.onrender.com',
   process.env.FRONTEND_URL
 ].filter(Boolean);
 
@@ -28,6 +29,8 @@ app.use(cors({
     }
   },
   credentials: true,
+  methods: ['GET', 'POST', 'PUT', 'DELETE', 'OPTIONS'],
+  allowedHeaders: ['Content-Type', 'Authorization'],
 }));
 
 app.use(express.json());

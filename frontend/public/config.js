@@ -9,6 +9,5 @@
  */
 window.ENV = {
   // URL de l'API backend
-  // Décommentez et modifiez cette ligne si vous voulez définir l'URL manuellement
-  // VITE_API_URL: 'https://helpdesk-backend-xxxx.onrender.com'
+  VITE_API_URL: 'https://helpdesk-backend-y73t.onrender.com'
 };
